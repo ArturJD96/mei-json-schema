@@ -1,0 +1,265 @@
+{
+
+  "string": {
+      "type":"string"
+  },
+  "normalizedString": {
+      "type":"string",
+      "pattern":true
+  },
+  "token": {
+      "type":"string",
+      "pattern":true
+  },
+  "language": {
+      "type":"string",
+      "pattern":true
+  },
+  "Name": {
+    "type":"string",
+    "pattern":true
+  },
+  "NCName": {
+      "type":"string",
+      "pattern":true
+  },
+  "ID": {
+      "type":"string",
+      "pattern":true
+  },
+  "IDREF": {
+      "type":"string",
+      "pattern":true
+  },
+  "IDREFS": {
+      "type":"array",
+      "items": {
+        "type":"string",
+        "pattern":true,
+      }
+  },
+  "ENTITY": {
+      "type":"string",
+      "pattern":true
+  },
+  "ENTITIES": {
+      "type":"array",
+      "items": {
+        "type":"string",
+        "pattern":true
+      }
+  },
+  "NMTOKEN": {
+      "type":"string",
+      "pattern":true
+  },
+  "NMTOKENS": {
+      "type":"array",
+      "items": {
+        "type":"string",
+        "pattern":true
+      }
+  },
+  "boolean": {
+      "type":"boolean"
+  },
+  "base64Binary": {
+      "type":"array"
+      "items": {
+        "type":"number"
+      }
+  },
+  "hexBinary": {
+      "type":"array",
+      "items": {
+        "type":"number"
+      }
+  },
+  "float": {
+      "type":"number"
+  },
+  "decimal": {
+      "type":"number"
+  },
+  "integer": {
+      "type":"number"
+  },
+  "nonPositiveInteger": {
+      "type":"number",
+      "maximum": 0
+  },
+  "negativeInteger": {
+      "type":"number",
+      "exclusiveMaximum": 0
+  },
+  "long": {
+      "type":"number",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807
+  },
+  "int": {
+      "type":"number",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+  },
+  "short": {
+      "type":"number",
+      "minimum": -32768,
+      "maximum": 32767
+  },
+  "byte": {
+      "type":"number",
+      "minimum": -128,
+      "maximum": 127
+  },
+  "nonNegativeInteger": {
+      "type":"number",
+      "minimum": 0
+  },
+  "unsignedLong": {
+      "type":"number",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+  },
+  "unsignedInt": {
+      "type":"number",
+      "minimum": 0,
+      "maximum": 4294967295
+  },
+  "unsignedShort": {
+      "type":"number",
+      "minimum": 0,
+      "maximum": 65535
+  },
+  "unsignedByte": {
+      "type":"number",
+      "minimum": 0,
+      "maximum": 255
+  },
+  "positiveInteger": {
+      "type":"number",
+      "exclusiveMinimum": 0
+  },
+  "double": {
+    "type":"number"
+  },
+  "anyURI": {
+    "type":"string",
+    "format": "uri"
+  },
+  "QName": {
+    "type":"object",
+    "properties": {
+      "namespaceURI": {
+          "type": "string",
+          "format": "uri"
+      },
+      "localPart": {},
+      "prefix": {
+          "type": "string"
+      }
+    }
+  },
+  "NOTATION": {
+    "type":"object",
+
+    "properties": {
+    "namespaceURI": {
+        "type": "string",
+        "format": "uri"
+    },
+    "localPart": {},
+    "prefix": {
+        "type": "string"
+    }
+  },
+  "duration": {
+    "type":"object",
+
+    "properties": {
+      "sign": {},
+      "years": {},
+      "months": {},
+      "days": {},
+      "hours": {},
+      "minutes": {},
+      "seconds": {}
+    }
+  },
+  "dateTime": {
+    "type":"object",
+
+    "properties": {
+      "year": {},
+      "month": {},
+      "day": {},
+      "hour": {},
+      "minute": {},
+      "second": {},
+      "fractionalSecond": {},
+      "timezone": {}
+    }
+  },
+  "date": {
+    "type":"object",
+
+    "properties": {
+      "year": {},
+      "month": {},
+      "day": {},
+      "timezone": {}
+    }
+  },
+  "time": {
+    "type":"object",
+
+    "properties": {
+      "hour": {},
+      "minute": {},
+      "second": {},
+      "fractionalSecond": {},
+      "timezone": {}
+  },
+  "gYearMonth": {
+    "type":"object",
+
+    "properties": {
+      "year": {},
+      "month": {},
+      "timezone": {}
+    }
+  },
+  "gYear": {
+    "type":"object",
+
+    "properties": {
+      "year": {},
+      "timezone": {}
+    }
+  },
+  "gMonthDay": {
+    "type":"object",
+
+    "properties": {
+      "month": {},
+      "day": {},
+      "timezone": {}
+    }
+  },
+  "gDay": {
+    "type":"object",
+
+    "properties": {
+      "day": {},
+      "timezone": {}
+    }
+  },
+  "gMonth": {
+    "type":"object",
+
+    "properties": {
+      "month": {},
+      "timezone": {}
+    }
+  }
+}

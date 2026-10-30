@@ -1,0 +1,518 @@
+(
+
+  /*
+      Return Element at a given path from context.
+  */
+  $elem := function($ctx, $path) {(
+    $iter := function($obj, $elemNames) {(
+      $name := $elemNames[0];
+      $elem := $obj.elements[name=$name];
+      $name ? (
+        $elem ? (
+            $remaining := $elemNames[[1..$count($elemNames)]];
+            $iter($elem, $remaining)
+        )
+      ) : $obj
+    )};
+    $iter($ctx, $split($path, "."))
+  )};
+
+  $xml := function($el) {(
+    /* TO DO: Not finished (only element and text nodes) */
+    $tag := $el.name;
+    $attrs := $el.attributes ~> $each(function($v, $k) { $k & "=\"" & $v & "\"" }) ~> $join(" ");
+    $text := $el ~> $text;
+    $elems := $text ?: $el.elements ? $join($el.elements.$xml($));
+    $el ? "<" & $tag & ($attrs ? " "&$attrs) & ($elems ? (">"&$elems&"</"&$tag&">") : "/>")
+  )};
+
+  /* Reference a definition in schema's $defs. */
+  $ref := function($str) { "#/$defs/" & $str };
+
+
+  /*
+      If $elem is a text node, format this text to markdown and return it.
+  */
+
+  $text := function($el) {(
+
+    $format := function($elems) {(
+      /* TO DO: process text if expressed with XML elements. */
+      $join($elems.(
+        type="text" ? $.text :
+        "[[ERROR: Cannot process text with <" & $.name & "> tag: " & $ & "]]")
+      )
+    )};
+
+    $el.elements[type="text"] ? $format($el.elements)
+
+  )};
+
+
+  /*
+      RNG Dataypes conversion (based on Jsonix)
+  */
+  $datatype := function($dt) {(
+
+    /* Note: "pattern": true means that this datatype needs a pattern. */
+    $datatypes := {
+      "string": {
+          "type":"string"
+      },
+      "normalizedString": {
+          "type":"string",
+          "pattern":true
+      },
+      "token": {
+          "type":"string",
+          "pattern":true
+      },
+      "language": {
+          "type":"string",
+          "pattern":true
+      },
+      "Name": {
+        "type":"string",
+        "pattern":true
+      },
+      "NCName": {
+          "type":"string",
+          "pattern":true
+      },
+      "ID": {
+          "type":"string",
+          "pattern":true
+      },
+      "IDREF": {
+          "type":"string",
+          "pattern":true
+      },
+      "IDREFS": {
+          "type":"array",
+          "items": {
+            "type":"string",
+            "pattern":true
+          }
+      },
+      "ENTITY": {
+          "type":"string",
+          "pattern":true
+      },
+      "ENTITIES": {
+          "type":"array",
+          "items": {
+            "type":"string",
+            "pattern":true
+          }
+      },
+      "NMTOKEN": {
+          "type":"string",
+          "pattern":true
+      },
+      "NMTOKENS": {
+          "type":"array",
+          "items": {
+            "type":"string",
+            "pattern":true
+          }
+      },
+      "boolean": {
+          "type":"boolean"
+      },
+      "base64Binary": {
+          "type":"array",
+          "items": {
+            "type":"number"
+          }
+      },
+      "hexBinary": {
+          "type":"array",
+          "items": {
+            "type":"number"
+          }
+      },
+      "float": {
+          "type":"number"
+      },
+      "decimal": {
+          "type":"number"
+      },
+      "integer": {
+          "type":"number"
+      },
+      "nonPositiveInteger": {
+          "type":"number",
+          "maximum": 0
+      },
+      "negativeInteger": {
+          "type":"number",
+          "exclusiveMaximum": 0
+      },
+      "long": {
+          "type":"number",
+          "minimum": -9223372036854775808,
+          "maximum": 9223372036854775807
+      },
+      "int": {
+          "type":"number",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+      },
+      "short": {
+          "type":"number",
+          "minimum": -32768,
+          "maximum": 32767
+      },
+      "byte": {
+          "type":"number",
+          "minimum": -128,
+          "maximum": 127
+      },
+      "nonNegativeInteger": {
+          "type":"number",
+          "minimum": 0
+      },
+      "unsignedLong": {
+          "type":"number",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+      },
+      "unsignedInt": {
+          "type":"number",
+          "minimum": 0,
+          "maximum": 4294967295
+      },
+      "unsignedShort": {
+          "type":"number",
+          "minimum": 0,
+          "maximum": 65535
+      },
+      "unsignedByte": {
+          "type":"number",
+          "minimum": 0,
+          "maximum": 255
+      },
+      "positiveInteger": {
+          "type":"number",
+          "exclusiveMinimum": 0
+      },
+      "double": {
+        "type":"number"
+      },
+      "anyURI": {
+        "type":"string",
+        "format": "uri"
+      },
+      "QName": {
+        "type":"object",
+        "properties": {
+          "namespaceURI": {
+              "type": "string",
+              "format": "uri"
+          },
+          "localPart": {},
+          "prefix": {
+              "type": "string"
+          }
+        }
+      },
+      "NOTATION": {
+        "type":"object",
+        "properties": {
+          "namespaceURI": {
+              "type": "string",
+              "format": "uri"
+          },
+          "localPart": {},
+          "prefix": {
+              "type": "string"
+          }
+        }
+      },
+      "duration": {
+        "type":"object",
+        "properties": {
+          "sign": {},
+          "years": {},
+          "months": {},
+          "days": {},
+          "hours": {},
+          "minutes": {},
+          "seconds": {}
+        }
+      },
+      "dateTime": {
+        "type":"object",
+        "properties": {
+          "year": {},
+          "month": {},
+          "day": {},
+          "hour": {},
+          "minute": {},
+          "second": {},
+          "fractionalSecond": {},
+          "timezone": {}
+        }
+      },
+      "date": {
+        "type":"object",
+        "properties": {
+          "year": {},
+          "month": {},
+          "day": {},
+          "timezone": {}
+        }
+      },
+      "time": {
+        "type":"object",
+        "properties": {
+          "hour": {},
+          "minute": {},
+          "second": {},
+          "fractionalSecond": {},
+          "timezone": {}
+        }
+      },
+      "gYearMonth": {
+        "type":"object",
+        "properties": {
+          "year": {},
+          "month": {},
+          "timezone": {}
+        }
+      },
+      "gYear": {
+        "type":"object",
+        "properties": {
+          "year": {},
+          "timezone": {}
+        }
+      },
+      "gMonthDay": {
+        "type":"object",
+        "properties": {
+          "month": {},
+          "day": {},
+          "timezone": {}
+        }
+      },
+      "gDay": {
+        "type":"object",
+        "properties": {
+          "day": {},
+          "timezone": {}
+        }
+      },
+      "gMonth": {
+        "type":"object",
+        "properties": {
+          "month": {},
+          "timezone": {}
+        }
+      }
+    };
+
+    $lookup($datatypes, $dt);
+
+  )};
+
+
+  /*
+      XML tag handlers (as they are used in MEI's ODD).
+  */
+
+
+  $defaultElementHandler := function($el) { $el ? $el.elements.$handle($) };
+
+  $handle := function($el) {(
+
+    $handlers := {
+      /* TEI */
+      "macroSpec": $macroSpecHandler,
+      "classSpec": $classSpecHandler,
+      "elementSpec": $elementSpecHandler,
+      "constraintSpec": $constraintSpecHandler,
+      "moduleSpec": $moduleSpecHandler,
+
+      "exemplum": $defaultElementHandler,
+      "egXML": function($el) { $el.elements.$xml($) },
+
+      "constraint": function($el) {(
+        "[[UNSUPPORTED]]" /* list of <sch:rule/> */
+      )},
+
+      "classes": function($el) {(
+        $members := $el ~> $handleChildren("memberOf");
+        { "allOf": $members[] }
+      )},
+      "memberOf": function($el) {
+        { "$ref": $ref($el.attributes.key) }
+      },
+
+      "datatype": function($el) {
+        $datatype($el)
+      },
+
+      "attList": function($el) {(
+        /*
+          Expressed as object, because keys must be unique,
+          see: https://www.tei-c.org/release/doc/tei-p5-doc/en/html/ref-attList.html
+        */
+        $defs := $el.$elem($, "attDef");
+        $merge($defs { attributes.ident: $ ~> $handle })
+      )},
+      "attDef": function($el) {(
+
+        $el ~> $handleDescribable ~> $cleanElement
+
+      )},
+
+      "content": function($el) {(
+
+
+
+      )},
+
+
+      "desc": function($el) { $el ~> $text },
+      "remarks": function($el) {(
+        $r := $el ~> $text;
+        $r ? ("\n_REMARKS_: " & $r)
+      )},
+      "p": function($el) { $el ~> $text },
+      "gloss": function($el) { $el ~> $text }
+
+
+      /* RNG */
+      /* Schematron */
+    };
+
+    $DEBUG := true;
+    $handler := $lookup($handlers, $el.name);
+    $msg := function($el) { $DEBUG ? $error("Handler not defined for tag: " & $el.name) : "[[Unimplemented: <" & $el.name & ">]]" };
+
+    $el ? ($handler ?? $msg)($el);
+
+  )};
+
+  $handleChildren := function($el, $childTagName) {
+    $el.$elem($, $childTagName).$handle($)
+  };
+
+  /*
+    Returns the handled object, but properties listed in "$a"
+    are processed separately by "$f" and removed from the returned object.
+  */
+  $handleSome := function($el, $a, $f) {(
+    $result := $el ~> $f;
+    $elems := $el.elements[$not(name in $a)] ?: [];
+    $merge([$result, $el]) ~> | $ | { "elements": $elems } |
+  )};
+
+  $handleDescribable := $handleSome(?, ["desc", "remarks", "exemplum", "gloss"],
+    function($el) {
+      {
+        "title": (
+          $gloss := $el ~> $handleChildren("gloss");
+          $gloss ?? $el.attributes.ident
+        ),
+        "description": (
+          $desc := $el ~> $handleChildren("desc");
+          $remarks := $el ~> $handleChildren("remarks");
+          ($desc or $remarks) ? $join([$desc ?: "", $remarks ?: ""])
+        ),
+        "examples": $el ~> $handleChildren("exemplum")
+      }
+    }
+  );
+
+  $prepareSpec := function($el) {(
+    /*
+      TO DO: change xml-js's key names
+      (watch out: xml-js's "type" collide's with JSON Schema's "type").
+
+      – type: object? array?
+    */
+    $el ~> | $ | $, ["type", "name"] | ~> $handleDescribable
+  )};
+
+  $cleanElement := function($el) {(
+   $el ~> | $ | {"elements": $.elements.$handle($)[]} |
+  )};
+
+  $handleAttrs := $handleSome(?, ["attList"],
+    function($el) {
+      {
+        "properties": $el ~> $handleChildren("attList"),
+        "required": ($el.* ~> $elem("attDef"))[usage="req"].ident /* TO DO: does not appear! */
+      }
+    }
+  );
+
+  $handleContent := $handleSome(?, ["content"], /* RNG */
+    function($el) {
+      {
+        "items": $el ~> $handleChildren("content")
+      }
+    }
+  );
+
+  $handleClasses := $handleSome(?, ["classes", "memberOf"],
+    function($el) {(
+      $classes := $el ~> $handleChildren("classes")
+      { "allOf": $classes[] }
+    )}
+  );
+
+  /*
+      Handlers.
+  */
+
+  $macroSpecHandler := function($el) {(
+
+    $el ~> $prepareSpec ~> $handleContent ~> $cleanElement;
+
+  )};
+
+  $classSpecHandler := function($el) {(
+
+    $el ~> $prepareSpec ~> $handleAttrs ~> $handleClasses ~> $cleanElement;
+
+  )};
+
+  $elementSpecHandler := function($el) {(
+
+    $el ~> $prepareSpec ~> $handleAttrs ~> $handleContent ~> $handleClasses ~> $cleanElement;
+
+  )};
+
+  $constraintSpecHandler := function($el) {(
+
+    $el ~> $prepareSpec ~> $cleanElement;
+
+  )};
+
+  $moduleSpecHandler := function($el) {(
+
+    $el ~> $prepareSpec ~> $handleContent ~> $cleanElement;
+
+  )};
+
+
+
+
+
+  /*
+      Main Schema composition.
+  */
+
+  $schemaSpec := $ ~> $elem("TEI.text.body.schemaSpec");
+  $start := $split($schemaSpec.attributes.start, " ").{"$ref": $ref($)};
+
+  {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "mei-all-5.1",
+    "anyOf": $start,
+    "$defs": $schemaSpec.elements { attributes.ident: $ ~> $handle }
+  }
+)

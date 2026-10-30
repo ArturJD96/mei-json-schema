@@ -1,0 +1,20 @@
+{
+  "name": "mei-odd-to-json-schema",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "author": "Chanted Studio Artur Dobija"
+  "scripts": {
+    "build": "clear; node build.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.22.0",
+  "devDependencies": {
+    "jsonata": "^2.2.2",
+    "xml-js": "^1.6.11"
+  }
+}
